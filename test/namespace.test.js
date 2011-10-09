@@ -243,5 +243,59 @@ module.exports = {
         }
       });
     })
-  }
+  },
+  
+  'wildcards can be used for event namespaces (note: not socket.io namespaces)': function (done) {
+    var cl = client(++ports)
+      , io = create(cl)
+      , ws;
+
+    io.sockets.on('connection', function (socket) {
+      socket.on('foo.*', function() {
+        done();
+      });
+    });
+
+    cl.handshake(function (sid) {
+      ws = websocket(cl, sid);
+      ws.on('open', function (){
+         ws.packet({
+            type: 'event'
+          , name: 'foo.bar'
+          , endpoint: ''
+        });
+        cl.end();
+        ws.finishClose();
+        io.server.close();
+      });
+    });
+  },
+
+  '* wildcard will match all events': function (done) {
+    var cl = client(++ports)
+      , io = create(cl)
+      , ws;
+
+    io.sockets.on('connection', function (socket) {
+      socket.on('*', function() {
+        if (this.event == 'testing testing') {
+          done();
+        }
+      });
+    });
+
+    cl.handshake(function (sid) {
+      ws = websocket(cl, sid);
+      ws.on('open', function (){
+         ws.packet({
+            type: 'event'
+          , name: 'testing testing'
+          , endpoint: ''
+        });
+        cl.end();
+        ws.finishClose();
+        io.server.close();
+      });
+    });
+  }  
 };

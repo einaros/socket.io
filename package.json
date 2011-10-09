@@ -19,6 +19,7 @@
         "socket.io-client": "0.8.5"
       , "policyfile": "0.0.4"
       , "redis": "0.6.6"
+      , "eventemitter2": "0.4.1"
     }
   , "devDependencies": {
         "expresso": "0.7.7"
